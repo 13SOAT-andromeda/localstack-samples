@@ -1,6 +1,6 @@
 resource "aws_api_gateway_rest_api" "simple_api" {
   name        = var.api_name
-  description = "A simple API Gateway for demonstration"
+  description = "An API Gateway integrated with Lambda"
 }
 
 resource "aws_api_gateway_resource" "hello" {
@@ -16,47 +16,23 @@ resource "aws_api_gateway_method" "hello_get" {
   authorization = "NONE"
 }
 
-resource "aws_api_gateway_integration" "mock" {
+resource "aws_api_gateway_integration" "lambda" {
   rest_api_id = aws_api_gateway_rest_api.simple_api.id
   resource_id = aws_api_gateway_resource.hello.id
   http_method = aws_api_gateway_method.hello_get.http_method
-  type        = "MOCK"
 
-  request_templates = {
-    "application/json" = jsonencode({
-      statusCode = 200
-    })
-  }
+  integration_http_method = "POST"
+  type                    = "AWS_PROXY"
+  uri                     = "arn:aws:apigateway:${data.aws_region.current.name}:lambda:path/2015-03-31/functions/${var.lambda_arn}/invocations"
 }
 
-resource "aws_api_gateway_method_response" "hello_200" {
-  rest_api_id = aws_api_gateway_rest_api.simple_api.id
-  resource_id = aws_api_gateway_resource.hello.id
-  http_method = aws_api_gateway_method.hello_get.http_method
-  status_code = "200"
-}
-
-resource "aws_api_gateway_integration_response" "hello_response" {
-  rest_api_id = aws_api_gateway_rest_api.simple_api.id
-  resource_id = aws_api_gateway_resource.hello.id
-  http_method = aws_api_gateway_method.hello_get.http_method
-  status_code = aws_api_gateway_method_response.hello_200.status_code
-
-  response_templates = {
-    "application/json" = jsonencode({
-      message = "Hello from API Gateway!"
-    })
-  }
-
-  depends_on = [aws_api_gateway_integration.mock]
-}
+data "aws_region" "current" {}
 
 resource "aws_api_gateway_deployment" "simple" {
   rest_api_id = aws_api_gateway_rest_api.simple_api.id
 
   depends_on = [
-    aws_api_gateway_integration.mock,
-    aws_api_gateway_integration_response.hello_response
+    aws_api_gateway_integration.lambda
   ]
 
   lifecycle {
@@ -64,8 +40,17 @@ resource "aws_api_gateway_deployment" "simple" {
   }
 }
 
-resource "aws_api_gateway_stage" "prod" {
+resource "aws_api_gateway_stage" "dev" {
   deployment_id = aws_api_gateway_deployment.simple.id
   rest_api_id   = aws_api_gateway_rest_api.simple_api.id
-  stage_name    = "prod"
+  stage_name    = var.stage_name
+}
+
+resource "aws_lambda_permission" "apigw_lambda" {
+  statement_id  = "AllowExecutionFromAPIGateway"
+  action        = "lambda:InvokeFunction"
+  function_name = var.lambda_arn
+  principal     = "apigateway.amazonaws.com"
+
+  source_arn = "${aws_api_gateway_rest_api.simple_api.execution_arn}/*/*"
 }

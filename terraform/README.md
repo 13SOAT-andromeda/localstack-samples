@@ -1,40 +1,40 @@
 # Terraform Infrastructure
 
-This directory contains two Terraform layers for deploying a simple S3 bucket.
+This directory contains Terraform configurations for deploying a serverless application consisting of an S3 bucket, a Lambda function, and an API Gateway.
 
-## Layers
+## Structure
 
-- **aws**: Deploys directly to AWS.
-- **localstack**: Deploys to a LocalStack instance running on `localhost:4566`.
+- `aws/`: Root module for deploying to real AWS.
+- `localstack/`: Root module for deploying to LocalStack (local environment).
+- `modules/`: Shared modules for S3, Lambda, and API Gateway.
+
+## Prerequisite: Lambda Zip
+
+Both layers require a Lambda deployment package. For LocalStack, a `dummy_lambda.zip` is provided. For AWS, you should provide the path to your actual Lambda zip file.
 
 ## Usage
 
-### AWS Layer
+### LocalStack (Local)
 
-```bash
-cd aws
-terraform init
-terraform plan
-terraform apply
-```
+1. Start LocalStack:
+   ```bash
+   localstack start -d
+   ```
 
-### LocalStack Layer
+2. Deploy:
+   ```bash
+   cd localstack
+   terraform init
+   terraform apply
+   ```
 
-Ensure LocalStack is running:
+### AWS (Remote)
 
-```bash
-localstack start -d
-```
+1. Configure your AWS credentials (e.g., `aws configure` or environment variables).
 
-Then:
-
-```bash
-cd localstack
-terraform init
-terraform plan
-terraform apply
-```
-
-## Shared Modules
-
-The `modules/s3_bucket` directory contains a shared module used by both layers to ensure consistency.
+2. Deploy:
+   ```bash
+   cd aws
+   terraform init
+   terraform apply -var="lambda_zip_path=/path/to/your/lambda.zip"
+   ```
