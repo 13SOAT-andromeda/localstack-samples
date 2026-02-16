@@ -8,13 +8,19 @@ provider "aws" {
   s3_use_path_style           = true
 
   endpoints {
-    s3 = "http://localhost:4566"
+    s3         = "http://localhost:4566"
+    apigateway = "http://localhost:4566"
   }
 }
 
 module "s3_bucket" {
   source      = "../modules/s3_bucket"
   bucket_name = "${var.bucket_prefix}-localstack-bucket"
+}
+
+module "api_gateway" {
+  source   = "../modules/api_gateway"
+  api_name = "${var.bucket_prefix}-localstack-api"
 }
 
 variable "bucket_prefix" {
@@ -24,4 +30,8 @@ variable "bucket_prefix" {
 
 output "bucket_arn" {
   value = module.s3_bucket.bucket_arn
+}
+
+output "api_base_url" {
+  value = module.api_gateway.base_url
 }
