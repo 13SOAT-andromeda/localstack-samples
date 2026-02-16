@@ -1,5 +1,9 @@
 # LocalStack Usage Guide
 
+## Quick Links
+- [Terraform Infrastructure Overview](terraform/README.md)
+- [API Gateway Module Details & Usage](terraform/modules/api_gateway/README.md)
+
 This `README.md` provides a simple and clean guide on how to use LocalStack for local AWS cloud development.
 
 ## What is LocalStack?
@@ -108,3 +112,16 @@ docker stop <container-id>
 ## More Information
 
 For more detailed information, examples, and advanced configurations, please refer to the [LocalStack Documentation](https://docs.localstack.cloud/).
+
+## Terraform Configuration
+
+This repository includes Terraform configurations to deploy resources to both AWS and LocalStack.
+
+- **S3 Bucket**: A simple module to create S3 buckets.
+- **API Gateway**: A module for a mock REST API.
+
+To get started with Terraform:
+```bash
+cd terraform
+# Follow instructions in terraform/README.md
+```
