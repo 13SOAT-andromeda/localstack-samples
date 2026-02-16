@@ -8,8 +8,16 @@ module "s3_bucket" {
 }
 
 module "api_gateway" {
-  source   = "../modules/api_gateway"
-  api_name = "${var.bucket_prefix}-aws-api"
+  source     = "../modules/api_gateway"
+  api_name   = "${var.bucket_prefix}-aws-api"
+  lambda_arn = module.hello_lambda.lambda_arn
+  stage_name = "dev"
+}
+
+module "hello_lambda" {
+  source          = "../modules/lambda"
+  function_name   = "hello-go-lambda"
+  lambda_zip_path = var.lambda_zip_path
 }
 
 variable "region" {
@@ -22,10 +30,19 @@ variable "bucket_prefix" {
   default = "my-sample-project"
 }
 
+variable "lambda_zip_path" {
+  type        = string
+  description = "Path to the Go binary zip"
+}
+
 output "bucket_arn" {
   value = module.s3_bucket.bucket_arn
 }
 
 output "api_base_url" {
   value = module.api_gateway.base_url
+}
+
+output "lambda_arn" {
+  value = module.hello_lambda.lambda_arn
 }

@@ -1,5 +1,5 @@
 output "base_url" {
-  value = "${aws_api_gateway_deployment.simple.invoke_url}${aws_api_gateway_stage.prod.stage_name}"
+  value = aws_api_gateway_stage.dev.invoke_url
 }
 
 output "api_id" {

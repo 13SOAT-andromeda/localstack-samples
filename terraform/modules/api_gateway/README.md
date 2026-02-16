@@ -11,7 +11,7 @@ The module creates a REST API with a `GET` method at the `/hello` path.
 In a standard AWS environment, the API is accessible via the URL provided in the `api_base_url` output:
 
 ```bash
-curl https://<api-id>.execute-api.<region>.amazonaws.com/prod/hello
+curl https://<api-id>.execute-api.<region>.amazonaws.com/dev/hello
 ```
 
 ### Accessing the API (LocalStack)
@@ -28,7 +28,7 @@ When running locally with LocalStack, the root URL (`http://localhost:4566`) is 
    Use the following URL format (replacing `<api_id>` with the output from the previous step):
 
    ```bash
-   curl http://localhost:4566/restapis/<api_id>/prod/_user_request_/hello
+   curl http://localhost:4566/restapis/<api_id>/dev/_user_request_/hello
    ```
 
    *Note: If you simply call `http://localhost:4566/hello`, LocalStack may mistake the request for an S3 bucket named "hello".*

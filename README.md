@@ -3,6 +3,7 @@
 ## Quick Links
 - [Terraform Infrastructure Overview](terraform/README.md)
 - [API Gateway Module Details & Usage](terraform/modules/api_gateway/README.md)
+- [Lambda Module Details & Usage](terraform/modules/lambda/README.md)
 
 This `README.md` provides a simple and clean guide on how to use LocalStack for local AWS cloud development.
 
@@ -125,3 +126,13 @@ To get started with Terraform:
 cd terraform
 # Follow instructions in terraform/README.md
 ```
+
+## Troubleshooting Lambda on LocalStack
+
+If you encounter an error like `InternalError: Error while creating lambda: Docker not available`, it means LocalStack needs access to your host's Docker socket to run Lambda functions. 
+
+Ensure you start LocalStack with the Docker socket mounted:
+- If using `localstack start`, ensure the environment is configured correctly.
+- If using `docker run`, add `-v /var/run/docker.sock:/var/run/docker.sock`.
+
+For more details, see the [LocalStack Lambda Docker Documentation](https://docs.localstack.cloud/user-guide/aws/lambda/#docker-not-available).
